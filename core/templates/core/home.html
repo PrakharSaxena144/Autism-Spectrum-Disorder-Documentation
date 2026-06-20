@@ -1,0 +1,183 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}ASD Gaze Screening AI | Early Autism Detection via Eye-Movement{% endblock %}
+
+{% block content %}
+
+<!-- ============ HERO ============ -->
+<section class="hero-clinical text-center">
+    <div class="container">
+        <span class="hero-eyebrow"><span class="gaze-dot"></span>Minor Project II </span>
+        <h1>Early Screening of Autism in Children Through Eye-Movement &amp; Sensory Signals</h1>
+        <p class="lead">
+            Two stage deep learning pipeline - GazePredictorUNet + OverlayClassifier that
+            distinguishes ASD from typically-developing gaze patterns using nothing more than
+            a webcam-grade eye-tracking heatmap.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+            <a href="{% url 'documentation' %}" class="btn btn-clinical-primary">View Documentation</a>
+            <a href="{{ github_url }}" class="btn btn-clinical-outline" target="_blank" rel="noopener">View GitHub</a>
+            <a href="{{ webcam_url }}" class="btn btn-clinical-webcam" target="_blank" rel="noopener">
+                🎥 Try Webcam Gaze Test
+            </a>
+        </div>
+        <p class="mt-3 mb-0" style="color:#9FB3AF; font-size:0.85rem;">
+            Note: the trained classifier is not yet deployed for live inference — the button above opens
+            <strong>GazeRecorder</strong>, the same webcam eye-tracking tool used to collect this project's
+            custom dataset.
+        </p>
+    </div>
+</section>
+
+<!-- ============ EPIDEMIOLOGY STAT STRIP ============ -->
+<section class="stat-strip">
+    <div class="container">
+        <div class="row gy-3">
+            <div class="col-6 col-md-3 stat-block">
+                <div class="stat-number">1 in 65</div>
+                <div class="stat-label">Children in India estimated to have ASD</div>
+            </div>
+            <div class="col-6 col-md-3 stat-block">
+                <div class="stat-number">3–5 yrs</div>
+                <div class="stat-label">Average age of diagnosis in India</div>
+            </div>
+            <div class="col-6 col-md-3 stat-block">
+                <div class="stat-number">6–12+ mo</div>
+                <div class="stat-label">Typical wait for formal diagnosis</div>
+            </div>
+            <div class="col-6 col-md-3 stat-block">
+                <div class="stat-number">83.08%</div>
+                <div class="stat-label">Best pipeline classification accuracy</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ WHAT THIS PROJECT DOES ============ -->
+<section class="section-wrap">
+    <div class="container">
+        <span class="section-eyebrow">The Problem</span>
+        <h2 class="section-title">Why eye-gaze, and why now?</h2>
+        <p class="section-sub">
+            Children with ASD reliably show measurable differences in where they look reduced
+            attention to faces, more diffuse fixation patterns, and atypical visual exploration
+            compared to typically-developing (TD) peers. These differences are an underused,
+            objective signal that conventional specialist-dependent diagnosis does not exploit.
+        </p>
+
+        <div class="row g-4 mt-2">
+            <div class="col-md-4">
+                <div class="card-clinical">
+                    <div class="card-clinical-header">Challenge 01</div>
+                    <h4>Subjective & Slow</h4>
+                    <p style="color:var(--ink-soft); margin-bottom:0;">
+                        Conventional ASD diagnosis depends on specialist observation and
+                        questionnaire-based instruments slow, costly, and inconsistent across clinicians.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-clinical">
+                    <div class="card-clinical-header">Challenge 02</div>
+                    <h4>The Missed Window</h4>
+                    <p style="color:var(--ink-soft); margin-bottom:0;">
+                        Therapy before age 5 leads to significantly better outcomes, yet Indian children
+                        are typically diagnosed at 3–5 years after much of that window has passed.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-clinical">
+                    <div class="card-clinical-header">Our Approach</div>
+                    <h4>Gaze Heatmaps + Deep Learning</h4>
+                    <p style="color:var(--ink-soft); margin-bottom:0;">
+                        We classify ASD vs TD using only gaze heatmaps from a webcam-based eye tracker
+                        no specialist hardware, no clinic visit required for the screening step.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ PIPELINE SNAPSHOT ============ -->
+<section class="section-wrap alt">
+    <div class="container">
+        <span class="section-eyebrow">Pipeline Snapshot</span>
+        <h2 class="section-title">Three preprocessing strategies, one clear winner</h2>
+        <p class="section-sub">
+            We benchmarked three serial preprocessing pipelines on the ASD Saliency dataset
+            (600 heatmaps, 14 ASD + 14 TD children). Full breakdown on the Results page.
+        </p>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card-clinical">
+                    <span class="badge" style="background:var(--rose); color:#fff;">Worst</span>
+                    <h4 class="mt-2">Pipeline 1 — Full Complex</h4>
+                    <p style="color:var(--ink-soft); font-size:0.9rem;">7 cumulative stages including Watershed & Morphology</p>
+                    <div class="stat-number" style="font-size:1.8rem;">61.36%</div>
+                    <div class="stat-label">Accuracy — over-processing destroys signal</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-clinical">
+                    <span class="badge" style="background:var(--teal-mid); color:#fff;">Good</span>
+                    <h4 class="mt-2">Pipeline 2 — Balanced</h4>
+                    <p style="color:var(--ink-soft); font-size:0.9rem;">CLAHE + Bilateral + Min-Max Norm</p>
+                    <div class="stat-number" style="font-size:1.8rem;">82.31%</div>
+                    <div class="stat-label">Accuracy — Precision 0.9375</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card-clinical" style="border-color: var(--teal-accent); box-shadow: 0 0 0 2px rgba(45,140,127,0.15);">
+                    <span class="badge-best">Best Overall</span>
+                    <h4 class="mt-2">Pipeline 3 — CLAHE + Bilateral</h4>
+                    <p style="color:var(--ink-soft); font-size:0.9rem;">Contrast enhancement + edge-preserving smoothing</p>
+                    <div class="stat-number" style="font-size:1.8rem;">83.08%</div>
+                    <div class="stat-label">Accuracy — F1 0.8136, Loss 0.4814</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'results' %}" class="btn btn-clinical-primary">See Full Results &amp; Confusion Matrix</a>
+        </div>
+    </div>
+</section>
+
+<!-- ============ TECH STACK ============ -->
+<section class="section-wrap">
+    <div class="container text-center">
+        <span class="section-eyebrow">Techniques Used</span>
+        <h2 class="section-title mb-4">From classical vision to attention-based deep learning</h2>
+        <div>
+            <span class="tech-chip">CLAHE</span>
+            <span class="tech-chip is-best">Bilateral Filter</span>
+            <span class="tech-chip">Gaussian Blur</span>
+            <span class="tech-chip">Otsu Thresholding</span>
+            <span class="tech-chip">Adaptive Threshold</span>
+            <span class="tech-chip">Morphological Ops</span>
+            <span class="tech-chip">Watershed Segmentation</span>
+            <span class="tech-chip">Min-Max Normalisation</span>
+            <span class="tech-chip is-best">U-Net + SE Attention</span>
+            <span class="tech-chip is-best">Residual CNN + Channel Attention</span>
+        </div>
+    </div>
+</section>
+
+<!-- ============ IMAGE GALLERY TEASER ============ -->
+<section class="section-wrap alt">
+    <div class="container text-center">
+        <span class="section-eyebrow">Visual Archive</span>
+        <h2 class="section-title">Figures and pipeline, one gallery</h2>
+        <p class="section-sub mx-auto">
+            Dataset samples, heatmap construction, all three preprocessing pipelines side-by-side,
+            and the final two-stage architecture browse every visual from the report and slide deck.
+        </p>
+        <a href="{% url 'gallery' %}" class="btn btn-clinical-primary">Open Image Gallery</a>
+    </div>
+</section>
+
+{% endblock %}

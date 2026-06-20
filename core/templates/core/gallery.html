@@ -1,0 +1,149 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Image Gallery | ASD Gaze Screening AI{% endblock %}
+
+{% block content %}
+
+<section class="hero-clinical text-center" style="padding: 3rem 1rem 2.5rem;">
+    <div class="container">
+        <span class="hero-eyebrow"><span class="gaze-dot"></span>Visual Archive</span>
+        <h1 style="font-size: 2.1rem;">Image Gallery</h1>
+        <p class="lead" style="font-size:1.05rem;">
+            Every figure from the report and presentation — dataset samples, heatmap
+            construction, all three preprocessing pipelines, and the final architecture —
+            in one place. Click any image to view it full-size.
+        </p>
+    </div>
+</section>
+
+<div class="container my-5">
+
+    <!-- FILTER BAR -->
+    <div class="gallery-filter-bar" id="filterBar">
+        <button class="gallery-filter-btn active" data-filter="all">All ({{ categories|length }} groups)</button>
+        {% for cat in categories %}
+            <button class="gallery-filter-btn" data-filter="{{ cat.key }}">{{ cat.label }}</button>
+        {% endfor %}
+    </div>
+
+    {% for cat in categories %}
+    <div class="gallery-section" data-section="{{ cat.key }}">
+        <h3 class="gallery-section-heading">
+            <span class="gaze-dot"></span>{{ cat.label }}
+        </h3>
+        <div class="gallery-grid">
+            {% for item in cat.items %}
+            <div class="gallery-card"
+                 data-img="{% static item.file %}"
+                 data-caption="{{ item.caption }}"
+                 data-tag="{{ item.tag }}">
+                <div class="gallery-card-img-wrap">
+                    <img src="{% static item.file %}" alt="{{ item.caption }}" loading="lazy">
+                </div>
+                <div class="gallery-card-body">
+                    <span class="gallery-card-tag">{{ item.tag }}</span>
+                    <p class="gallery-card-caption">{{ item.caption }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
+<!-- LIGHTBOX -->
+<div class="gallery-lightbox" id="lightbox">
+    <button class="gallery-lightbox-close" id="lightboxClose">&times;</button>
+    <button class="gallery-lightbox-nav gallery-lightbox-prev" id="lightboxPrev">&#8249;</button>
+    <button class="gallery-lightbox-nav gallery-lightbox-next" id="lightboxNext">&#8250;</button>
+    <div class="gallery-lightbox-inner">
+        <img id="lightboxImg" src="" alt="">
+        <p class="gallery-lightbox-caption" id="lightboxCaption"></p>
+        <span class="gallery-lightbox-tag" id="lightboxTag"></span>
+    </div>
+</div>
+
+<script>
+(function () {
+    const filterBtns = document.querySelectorAll('.gallery-filter-btn');
+    const sections = document.querySelectorAll('.gallery-section');
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            sections.forEach(sec => {
+                sec.style.display = (filter === 'all' || sec.dataset.section === filter) ? '' : 'none';
+            });
+        });
+    });
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+    const lightboxCaption = document.getElementById('lightboxCaption');
+    const lightboxTag = document.getElementById('lightboxTag');
+    const closeBtn = document.getElementById('lightboxClose');
+    const prevBtn = document.getElementById('lightboxPrev');
+    const nextBtn = document.getElementById('lightboxNext');
+
+    let cards = [];
+    let currentIndex = 0;
+
+    function refreshVisibleCards() {
+        cards = Array.from(document.querySelectorAll('.gallery-section:not([style*="display: none"]) .gallery-card'));
+    }
+
+    function openLightbox(index) {
+        refreshVisibleCards();
+        if (!cards.length) return;
+        currentIndex = index;
+        const card = cards[currentIndex];
+        lightboxImg.src = card.dataset.img;
+        lightboxCaption.textContent = card.dataset.caption;
+        lightboxTag.textContent = card.dataset.tag;
+        lightbox.classList.add('is-open');
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('is-open');
+    }
+
+    function showRelative(delta) {
+        if (!cards.length) return;
+        currentIndex = (currentIndex + delta + cards.length) % cards.length;
+        const card = cards[currentIndex];
+        lightboxImg.src = card.dataset.img;
+        lightboxCaption.textContent = card.dataset.caption;
+        lightboxTag.textContent = card.dataset.tag;
+    }
+
+    document.addEventListener('click', (e) => {
+        const card = e.target.closest('.gallery-card');
+        if (card) {
+            refreshVisibleCards();
+            const idx = cards.indexOf(card);
+            openLightbox(idx);
+        }
+    });
+
+    closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+    prevBtn.addEventListener('click', () => showRelative(-1));
+    nextBtn.addEventListener('click', () => showRelative(1));
+
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('is-open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') showRelative(-1);
+        if (e.key === 'ArrowRight') showRelative(1);
+    });
+})();
+</script>
+
+{% endblock %}

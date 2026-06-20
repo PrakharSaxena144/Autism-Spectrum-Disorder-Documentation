@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Code Explorer | ASD Gaze Screening AI{% endblock %}
+
+{% block content %}
+
+<section class="hero-clinical text-center" style="padding: 3rem 1rem 2.5rem;">
+    <div class="container">
+        <span class="hero-eyebrow"><span class="gaze-dot"></span>Development History</span>
+        <h1 style="font-size: 2.1rem;">Code Explorer</h1>
+        <p class="lead" style="font-size:1.05rem;">
+            Every Colab notebook from this project's development — organised by phase, exactly
+            as we tracked it during the build.
+        </p>
+    </div>
+</section>
+
+<div class="container my-5">
+
+    <div class="explorer-shell">
+        <div class="row g-0">
+
+            <!-- SIDEBAR: phase index -->
+            <div class="col-lg-3 explorer-sidebar border-end" style="border-color:#2A3D44 !important;">
+                <div class="p-2">
+                    {% for p in phases %}
+                        <div class="explorer-phase-title">{{ p.phase }}</div>
+                        {% for item in p.items %}
+                            <a href="#phase-{{ forloop.parentloop.counter }}-{{ forloop.counter }}" class="explorer-item">
+                                {{ item.title|truncatechars:38 }}
+                            </a>
+                        {% endfor %}
+                    {% endfor %}
+                    <div class="explorer-phase-title">Final Architecture</div>
+                    <a href="#final-arch" class="explorer-item">{{ final_architecture.title }}</a>
+                </div>
+            </div>
+
+            <!-- MAIN: notebook cards -->
+            <div class="col-lg-9 p-4" style="background:#16242B;">
+
+                {% for p in phases %}
+                <h5 style="color:#fff; font-family:'Source Serif 4',serif; margin-top: {% if forloop.first %}0{% else %}1.8rem{% endif %};">
+                    {{ p.phase }}
+                </h5>
+                {% for item in p.items %}
+                <div class="notebook-card" id="phase-{{ forloop.parentloop.counter }}-{{ forloop.counter }}">
+                    <h6>{{ item.title }}</h6>
+                    <p>{{ item.desc }}</p>
+                    {% if item.url %}
+                        <a href="{{ item.url }}" target="_blank" rel="noopener" class="colab-link">
+                            📓 Open in Google Colab →
+                        </a>
+                    {% else %}
+                        <span class="no-link">Notebook reference not yet linked publicly.</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                {% endfor %}
+
+                <h5 style="color:#fff; font-family:'Source Serif 4',serif; margin-top: 1.8rem;" id="final-arch">
+                    {{ final_architecture.title }}
+                </h5>
+                <div class="notebook-card">
+                    <h6>Model 1 — GazePredictorUNet</h6>
+                    <p>{{ final_architecture.model1 }}</p>
+                </div>
+                <div class="notebook-card">
+                    <h6>Model 2 — OverlayClassifier</h6>
+                    <p>{{ final_architecture.model2 }}</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <p class="text-center mt-4" style="color:var(--ink-soft); font-size:0.88rem;">
+        Notebooks open directly in Google Colab in a new tab. Some early-phase notebooks
+        (preprocessing pipeline &amp; intensity-spot experiments) are referenced in our report
+        but not yet linked publicly — ask us directly for access.
+    </p>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,743 @@
+/* =====================================================================
+   ASD SCREENING AI — Documentation Site Stylesheet
+   Healthcare / clinical-research visual identity
+   ===================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+    --paper:       #FAFAF7;
+    --paper-dim:   #F1EFE7;
+    --ink:         #213132;
+    --ink-soft:    #51625F;
+    --teal-deep:   #1B3A4B;
+    --teal-mid:    #2D6E69;
+    --teal-accent: #2D8C7F;
+    --amber:       #E8A33D;
+    --amber-soft:  #FBE8C9;
+    --rose:        #C9604F;
+    --line:        #DDD8C9;
+    --card-bg:     #FFFFFF;
+    --radius:      10px;
+    --shadow-sm:   0 1px 3px rgba(27, 58, 75, 0.08);
+    --shadow-md:   0 6px 20px rgba(27, 58, 75, 0.10);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    color: var(--teal-deep);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+a { color: var(--teal-accent); text-decoration: none; }
+a:hover { color: var(--teal-deep); }
+
+code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+
+/* =====================================================================
+   SIGNATURE ELEMENT — Gaze dot / fixation marker
+   A small radial "fixation point" motif used as a recurring accent,
+   nodding to the eye-tracking heatmaps at the heart of this project.
+   ===================================================================== */
+.gaze-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff, var(--amber) 40%, var(--rose) 100%);
+    box-shadow: 0 0 0 4px rgba(232, 163, 61, 0.18);
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.scan-divider {
+    border: none;
+    height: 1px;
+    background-image: radial-gradient(circle, var(--teal-accent) 1.5px, transparent 1.5px);
+    background-size: 10px 1px;
+    background-repeat: repeat-x;
+    opacity: 0.55;
+    margin: 2.5rem 0;
+}
+
+/* =====================================================================
+   NAVBAR
+   ===================================================================== */
+.navbar-clinical {
+    background: var(--teal-deep);
+    padding: 0.9rem 0;
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar-clinical .navbar-brand {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: #fff !important;
+    letter-spacing: -0.01em;
+}
+
+.navbar-clinical .navbar-brand .gaze-dot { margin-right: 10px; }
+
+.navbar-clinical .nav-link {
+    color: rgba(255,255,255,0.82) !important;
+    font-weight: 500;
+    font-size: 0.93rem;
+    padding: 0.5rem 1rem !important;
+    border-radius: 6px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navbar-clinical .nav-link:hover,
+.navbar-clinical .nav-link.active {
+    color: #fff !important;
+    background: rgba(255,255,255,0.10);
+}
+
+.navbar-clinical .navbar-toggler {
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* =====================================================================
+   HERO
+   ===================================================================== */
+.hero-clinical {
+    background: linear-gradient(180deg, #16303E 0%, var(--teal-deep) 100%);
+    color: #F5F2E9;
+    padding: 4.5rem 1rem 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-clinical::before {
+    content: "";
+    position: absolute;
+    top: -120px; right: -120px;
+    width: 380px; height: 380px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(45,140,127,0.35), transparent 70%);
+}
+
+.hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 1rem;
+}
+
+.hero-clinical h1 {
+    color: #fff;
+    font-size: 2.6rem;
+    font-weight: 700;
+    max-width: 760px;
+    margin: 0 auto 1rem;
+}
+
+.hero-clinical .lead {
+    color: #D7E4E2;
+    font-size: 1.15rem;
+    max-width: 640px;
+    margin: 0 auto 2rem;
+}
+
+.btn-clinical-primary {
+    background: var(--amber);
+    border: none;
+    color: #1B2A23;
+    font-weight: 600;
+    padding: 0.65rem 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-clinical-primary:hover {
+    background: #f0b257;
+    color: #1B2A23;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-clinical-outline {
+    background: transparent;
+    border: 1.5px solid rgba(255,255,255,0.45);
+    color: #fff;
+    font-weight: 600;
+    padding: 0.62rem 1.45rem;
+    border-radius: 8px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+.btn-clinical-outline:hover {
+    background: rgba(255,255,255,0.10);
+    border-color: rgba(255,255,255,0.8);
+    color: #fff;
+}
+
+.btn-clinical-webcam {
+    background: var(--teal-accent);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 0.62rem 1.45rem;
+    border-radius: 8px;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+.btn-clinical-webcam:hover {
+    background: #246a62;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* =====================================================================
+   STAT STRIP (epidemiology numbers)
+   ===================================================================== */
+.stat-strip {
+    background: var(--paper-dim);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 2.2rem 0;
+}
+
+.stat-block { text-align: center; padding: 0.5rem 1rem; }
+
+.stat-number {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: 2.1rem;
+    color: var(--teal-deep);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    margin-top: 0.3rem;
+}
+
+/* =====================================================================
+   CARDS
+   ===================================================================== */
+.card-clinical {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.75rem;
+    height: 100%;
+}
+
+.card-clinical h3, .card-clinical h4 { margin-top: 0; }
+
+.card-clinical-header {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--teal-accent);
+    margin-bottom: 0.5rem;
+}
+
+/* =====================================================================
+   SECTION HEADERS
+   ===================================================================== */
+.section-wrap { padding: 3.5rem 0; }
+.section-wrap.alt { background: var(--paper-dim); }
+
+.section-eyebrow {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.section-title {
+    font-size: 1.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.section-sub {
+    color: var(--ink-soft);
+    max-width: 680px;
+    margin-bottom: 2rem;
+}
+
+/* =====================================================================
+   PIPELINE BADGES (technique chips)
+   ===================================================================== */
+.tech-chip {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--teal-deep);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.4rem 0.9rem;
+    border-radius: 999px;
+    margin: 0.25rem;
+}
+.tech-chip.is-best {
+    background: var(--teal-accent);
+    border-color: var(--teal-accent);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* =====================================================================
+   ACCORDION (pipeline timeline) — custom skin over Bootstrap accordion
+   ===================================================================== */
+.accordion-clinical .accordion-item {
+    border: 1px solid var(--line);
+    border-radius: var(--radius) !important;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.accordion-clinical .accordion-button {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--teal-deep);
+    background: #fff;
+    padding: 1.1rem 1.4rem;
+}
+
+.accordion-clinical .accordion-button:not(.collapsed) {
+    background: var(--paper-dim);
+    color: var(--teal-deep);
+    box-shadow: none;
+}
+
+.accordion-clinical .accordion-button:focus { box-shadow: none; border-color: var(--line); }
+
+.accordion-clinical .accordion-button::after {
+    filter: hue-rotate(140deg) saturate(0.6);
+}
+
+.accordion-clinical .accordion-body {
+    padding: 1.4rem 1.6rem 1.8rem;
+    background: #fff;
+}
+
+.stage-pill {
+    display: inline-block;
+    background: var(--amber-soft);
+    color: #8a5a13;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 5px;
+    margin-right: 0.4rem;
+}
+
+/* =====================================================================
+   CODE BLOCKS
+   ===================================================================== */
+pre {
+    background: #16242B;
+    border-radius: 8px;
+    padding: 1.1rem 1.3rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid #233740;
+}
+
+pre code {
+    color: #E7EEEC;
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
+p code, li code, td code {
+    background: var(--paper-dim);
+    color: var(--rose);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.87em;
+}
+
+/* =====================================================================
+   TABLES (results)
+   ===================================================================== */
+.table-clinical {
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.table-clinical thead th {
+    background: var(--teal-deep);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border: none;
+    padding: 0.85rem 1rem;
+}
+
+.table-clinical tbody td {
+    padding: 0.85rem 1rem;
+    border-color: var(--line);
+    font-size: 0.93rem;
+    vertical-align: middle;
+}
+
+.table-clinical tbody tr.row-best { background: rgba(45, 140, 127, 0.08); }
+.table-clinical tbody tr.row-worst { background: rgba(201, 96, 79, 0.06); }
+
+.badge-best {
+    background: var(--teal-accent);
+    color: #fff;
+    font-size: 0.72rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 5px;
+}
+
+/* =====================================================================
+   CONFUSION MATRIX
+   ===================================================================== */
+.confusion-grid {
+    display: grid;
+    grid-template-columns: 110px 1fr 1fr;
+    gap: 4px;
+    max-width: 460px;
+    margin: 0 auto;
+}
+.cm-cell {
+    padding: 1.1rem 0.5rem;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.cm-label { background: transparent; font-weight: 600; color: var(--ink-soft); display:flex; align-items:center; justify-content:center; font-size: 0.85rem;}
+.cm-tp, .cm-tn { background: var(--teal-deep); color: #fff; }
+.cm-fp, .cm-fn { background: var(--amber-soft); color: #8a5a13; }
+.cm-head { background: transparent; color: var(--ink-soft); font-size: 0.8rem; }
+
+/* =====================================================================
+   CODE EXPLORER (Colab notebook list)
+   ===================================================================== */
+.explorer-shell {
+    background: #16242B;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.explorer-sidebar {
+    background: #0F1B20;
+    color: #B9C6C3;
+    min-height: 70vh;
+}
+
+.explorer-phase-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--amber);
+    padding: 1rem 1.2rem 0.4rem;
+}
+
+.explorer-item {
+    display: block;
+    padding: 0.55rem 1.2rem;
+    color: #CBD6D3;
+    font-size: 0.88rem;
+    border-left: 3px solid transparent;
+    transition: background 0.15s ease;
+}
+.explorer-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+.notebook-card {
+    background: #1C2C33;
+    border: 1px solid #2A3D44;
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1rem;
+}
+.notebook-card h6 { color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; margin-bottom: 0.4rem;}
+.notebook-card p { color: #A9B8B5; font-size: 0.88rem; margin-bottom: 0.7rem; }
+.notebook-card .colab-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--amber);
+}
+.notebook-card .no-link {
+    font-size: 0.8rem;
+    color: #6E7E7B;
+    font-style: italic;
+}
+
+/* =====================================================================
+   ARCHITECTURE DIAGRAM BLOCK
+   ===================================================================== */
+.arch-block {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.7rem;
+    margin-bottom: 1.2rem;
+}
+.arch-block .arch-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--teal-mid);
+    padding: 0.2rem 0.6rem;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 0.6rem;
+}
+
+/* =====================================================================
+   FOOTER
+   ===================================================================== */
+.footer-clinical {
+    background: var(--teal-deep);
+    color: rgba(255,255,255,0.7);
+    padding: 2.2rem 0;
+    font-size: 0.88rem;
+}
+.footer-clinical a { color: rgba(255,255,255,0.85); }
+.footer-clinical a:hover { color: #fff; }
+
+/* =====================================================================
+   CONTACT PAGE
+   ===================================================================== */
+.contact-hero {
+    min-height: 70vh;
+    background: linear-gradient(160deg, var(--teal-deep), #0F2630);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    padding: 3rem 1rem;
+}
+.contact-card {
+    background: rgba(255,255,255,0.97);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 2.2rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: var(--shadow-md);
+}
+.contact-card h1 { margin-bottom: 0.3rem; }
+.contact-card .role-line { color: var(--ink-soft); font-size: 0.92rem; margin-bottom: 0.1rem;}
+
+/* =====================================================================
+   IMAGE GALLERY
+   ===================================================================== */
+.gallery-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.gallery-filter-btn {
+    background: #fff;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.gallery-filter-btn:hover {
+    border-color: var(--teal-accent);
+    color: var(--teal-deep);
+}
+.gallery-filter-btn.active {
+    background: var(--teal-deep);
+    border-color: var(--teal-deep);
+    color: #fff;
+}
+
+.gallery-section-heading {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.3rem;
+    color: var(--teal-deep);
+    margin: 2.5rem 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.4rem;
+}
+
+.gallery-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.gallery-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.gallery-card-img-wrap {
+    background: var(--paper-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    height: 190px;
+}
+.gallery-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.25s ease;
+}
+.gallery-card:hover .gallery-card-img-wrap img {
+    transform: scale(1.04);
+}
+
+.gallery-card-body {
+    padding: 0.85rem 1rem;
+}
+.gallery-card-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--teal-accent);
+    margin-bottom: 0.35rem;
+}
+.gallery-card-caption {
+    font-size: 0.85rem;
+    color: var(--ink);
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Lightbox */
+.gallery-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 26, 30, 0.92);
+    z-index: 1050;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+.gallery-lightbox.is-open { display: flex; }
+.gallery-lightbox-inner {
+    max-width: 90vw;
+    max-height: 88vh;
+    text-align: center;
+}
+.gallery-lightbox-inner img {
+    max-width: 90vw;
+    max-height: 72vh;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+.gallery-lightbox-caption {
+    color: #F0EDE2;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    max-width: 700px;
+}
+.gallery-lightbox-tag {
+    color: var(--amber);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 0.6rem;
+}
+.gallery-lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    background: none;
+    border: none;
+}
+.gallery-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+.gallery-lightbox-nav:hover { background: rgba(255,255,255,0.22); }
+.gallery-lightbox-prev { left: 1.5rem; }
+.gallery-lightbox-next { right: 1.5rem; }
+
+@media (max-width: 600px) {
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.9rem; }
+    .gallery-card-img-wrap { height: 130px; }
+    .gallery-lightbox-nav { width: 38px; height: 38px; font-size: 1.2rem; }
+}
+
+@media (max-width: 768px) {
+    .hero-clinical h1 { font-size: 1.9rem; }
+    .confusion-grid { grid-template-columns: 80px 1fr 1fr; }
+    .stat-number { font-size: 1.6rem; }
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    * { transition: none !important; }
+}
+
+/* Focus visibility */
+a:focus-visible, button:focus-visible, .nav-link:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+}

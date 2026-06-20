@@ -1,0 +1,313 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Documentation | ASD Gaze Screening AI{% endblock %}
+
+{% block content %}
+
+<section class="hero-clinical text-center" style="padding: 3rem 1rem 2.5rem;">
+    <div class="container">
+        <span class="hero-eyebrow"><span class="gaze-dot"></span>Technical Documentation</span>
+        <h1 style="font-size: 2.1rem;">From Raw Heatmaps to ASD Classification</h1>
+        <p class="lead" style="font-size:1.05rem;">
+            The complete pipeline: dataset, preprocessing, model architecture, and loss design.
+        </p>
+    </div>
+</section>
+
+<div class="container my-5">
+
+    <!-- TIMELINE / TECHNIQUE STRIP -->
+    <div class="card-clinical text-center mb-5">
+        <span class="stage-pill">01</span><span class="tech-chip">EDA</span>
+        <span class="stage-pill">02</span><span class="tech-chip">CLAHE</span>
+        <span class="stage-pill">03</span><span class="tech-chip">Bilateral Filter</span>
+        <span class="stage-pill">04</span><span class="tech-chip">Binarisation / Morphology</span>
+        <span class="stage-pill">05</span><span class="tech-chip">U-Net + SE Attention</span>
+        <span class="stage-pill">06</span><span class="tech-chip">Residual CNN Classifier</span>
+    </div>
+
+    <!-- ACCORDION -->
+    <div class="accordion accordion-clinical" id="docAccordion">
+
+        <!-- SECTION 1: Dataset -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#sec1">
+                    1. Dataset — ASD Saliency &amp; Custom GazeRecorder Data
+                </button>
+            </h2>
+            <div id="sec1" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                    <p>
+                        The primary dataset is the public <strong>ASD Saliency Dataset</strong>
+                        (Zenodo DOI: <code>10.5281/zenodo.2647418</code>): 300 stimulus images, 14 clinically
+                        diagnosed ASD children and 14 typically-developing controls, each viewing every
+                        image for a 3-second free-viewing trial. This yields 600 heatmaps (300 ASD + 300 TD)
+                        encoding fixation density as both scanpaths and overlay maps.
+                    </p>
+                    <h6>Dataset Summary</h6>
+                    <ul>
+                        <li>Stimuli images: 300</li>
+                        <li>ASD participants: 14 (clinical diagnosis) · TD participants: 14</li>
+                        <li>Trial duration: 3 seconds per image, free-viewing</li>
+                        <li>Eye-tracking data: fixation maps + scanpaths (x, y, duration)</li>
+                    </ul>
+
+                    <h6>Custom GazeRecorder Dataset</h6>
+                    <p>
+                        To capture real-world variability, we collected our own webcam-based gaze data using
+                        <a href="https://gazerecorder.com" target="_blank" rel="noopener">GazeRecorder</a>,
+                        recruiting volunteers from Reddit (<code>r/autism</code>, <code>r/AutisticAdults</code>).
+                        Each session was 30 seconds total: 10 stimulus images × 3 seconds each, producing gaze
+                        heatmap overlays on AMU campus landmark photographs.
+                    </p>
+                    <p><b>Why this matters:</b> GazeRecorder needs no specialised hardware — just a standard
+                    webcam — making the screening approach realistically deployable at scale.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: EDA -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#sec2">
+                    2. Exploratory Data Analysis — Do ASD &amp; TD Heatmaps Differ?
+                </button>
+            </h2>
+            <div id="sec2" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <p>
+                        Before committing to any architecture, we quantified low-level statistical
+                        differences between ASD and TD heatmaps across seven features: Entropy, Mean
+                        Intensity, Blob Spread, Contrast (RMS), Mean Blob Size, Number of Hotspots, and
+                        Hot Area %.
+                    </p>
+                    <h6>Key Observation</h6>
+                    <p>
+                        ASD heatmaps show <strong>higher entropy</strong> (4.81 vs 4.74) and
+                        <strong>larger mean blob size</strong> (1079.95px vs 1033.40px) than TD — gaze is
+                        more diffuse and spread over broader regions. TD heatmaps show more
+                        <strong>distinct hotspots</strong> (10.86 vs 10.45) — gaze clusters into more
+                        numerous, sharper focal points. Full statistical table is on the
+                        <a href="{% url 'results' %}">Results page</a>.
+                    </p>
+                    <h6>Sample Code — Feature Extraction</h6>
+                    <pre><code class="language-python">from scipy.stats import entropy
+import numpy as np
+
+def heatmap_entropy(hmap):
+    hist, _ = np.histogram(hmap.flatten(), bins=256, range=(0, 1), density=True)
+    hist = hist / hist.sum()
+    return entropy(hist + 1e-12)
+
+def blob_spread(hmap, threshold=0.5):
+    ys, xs = np.where(hmap > threshold)
+    return np.std(xs) + np.std(ys)  # spatial spread of high-intensity region
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: CLAHE -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#sec3">
+                    3. CLAHE — Contrast Limited Adaptive Histogram Equalisation
+                </button>
+            </h2>
+            <div id="sec3" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <p>
+                        CLAHE enhances local contrast by equalising the histogram within small tiles
+                        (e.g. 8×8), then clips and redistributes any bin exceeding a clip limit to
+                        prevent over-amplification of noise. Bilinear interpolation removes tile-boundary
+                        artefacts.
+                    </p>
+                    <h6>Formula</h6>
+                    <p class="mono" style="background:var(--paper-dim); padding:0.8rem 1rem; border-radius:8px; font-size:0.92rem;">
+                        s = T(r) = (L−1) · CDF(r), &nbsp; computed per-tile with clip_limit = β·(tile_size²/L)
+                    </p>
+                    <h6>Code Snippet</h6>
+                    <pre><code class="language-python">import cv2
+
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+enhanced = clahe.apply(gray_heatmap)
+</code></pre>
+                    <p><b>Result:</b> Consistently improved performance across all three pipelines — the
+                    single most reliable preprocessing step in this project.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: Bilateral / preprocessing pipelines -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#sec4">
+                    4. Bilateral Filtering &amp; the Three Preprocessing Pipelines
+                </button>
+            </h2>
+            <div id="sec4" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <p>
+                        The Bilateral Filter performs edge-preserving smoothing — it reduces noise while
+                        keeping fixation-region boundaries sharp, using both spatial proximity and
+                        intensity similarity.
+                    </p>
+                    <h6>Pipeline 1 (Full Complex — worst, 61.36%)</h6>
+                    <p class="mono" style="font-size:0.88rem; color:var(--ink-soft);">
+                        Bilateral → +Gaussian → +CLAHE → +Otsu Binarisation → +Adaptive Threshold → +Morphology → +Watershed
+                    </p>
+                    <h6>Pipeline 2 (Balanced — 82.31%)</h6>
+                    <p class="mono" style="font-size:0.88rem; color:var(--ink-soft);">
+                        Raw → +CLAHE → +Bilateral → +Min-Max Norm → +Binarisation
+                    </p>
+                    <h6>Pipeline 3 (Best — 83.08%)</h6>
+                    <p class="mono" style="font-size:0.88rem; color:var(--ink-soft);">
+                        Raw → +CLAHE → +Bilateral → +Min-Max Norm &nbsp;<span class="badge-best">no binarisation</span>
+                    </p>
+                    <h6>Code Snippet</h6>
+                    <pre><code class="language-python">bilateral = cv2.bilateralFilter(clahe_img, d=9, sigmaColor=75, sigmaSpace=75)
+norm = cv2.normalize(bilateral, None, 0, 1, cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+</code></pre>
+                    <p><b>Conclusion:</b> Skipping the final binarisation step (Pipeline 3) preserves
+                    continuous intensity gradients that carry diagnostic signal — binarising throws this away.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: Model 1 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#sec5">
+                    5. Model 1 — GazePredictorUNet (U-Net + SE Attention)
+                </button>
+            </h2>
+            <div id="sec5" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <p>
+                        A U-Net encoder-decoder with Squeeze-and-Excitation (SE) attention blocks.
+                        Input: <code>[B, 3, 128, 128]</code> preprocessed stimulus image. Output:
+                        <code>[B, 2, 128, 128]</code> — predicted ASD gaze map + predicted TD gaze map.
+                    </p>
+                    <h6>Architecture Highlights</h6>
+                    <ul>
+                        <li>Encoder: 4 stages of Conv2d → SE Block → MaxPool2d (channels double, spatial size halves: 128→64→32→16→8)</li>
+                        <li>Bottleneck: 8×8 spatial, 768 channels, Dropout2d(0.2)</li>
+                        <li>Decoder: ConvTranspose2d upsampling + skip connections from matching encoder stage</li>
+                        <li>Output: Sigmoid activation → valid probability map in [0,1]</li>
+                    </ul>
+                    <h6>SE Block Formula</h6>
+                    <p class="mono" style="background:var(--paper-dim); padding:0.8rem 1rem; border-radius:8px; font-size:0.9rem;">
+                        z_c = GlobalAvgPool(F_c) &nbsp;→&nbsp; s = σ(W₂·δ(W₁·z)) &nbsp;→&nbsp; F̃_c = s_c · F_c
+                    </p>
+                    <h6>Loss Function (Composite)</h6>
+                    <p class="mono" style="background:var(--paper-dim); padding:0.8rem 1rem; border-radius:8px; font-size:0.9rem;">
+                        L_M1 = MSE + 0.1 × KL + 0.05 × (1 − Pearson r)
+                    </p>
+                    <pre><code class="language-python">import torch.nn as nn
+
+class SEBlock(nn.Module):
+    def __init__(self, channels, reduction=16):
+        super().__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Sequential(
+            nn.Linear(channels, channels // reduction),
+            nn.ReLU(inplace=True),
+            nn.Linear(channels // reduction, channels),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        b, c, _, _ = x.shape
+        z = self.avg_pool(x).view(b, c)
+        s = self.fc(z).view(b, c, 1, 1)
+        return x * s
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: Model 2 -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#sec6">
+                    6. Model 2 — OverlayClassifier (Residual CNN + Channel Attention)
+                </button>
+            </h2>
+            <div id="sec6" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <p>
+                        Takes a 3-channel overlay input <code>[B, 3, 128, 128]</code>:
+                        ch0 = actual patient heatmap, ch1 = Model 1's predicted ASD region,
+                        ch2 = ch0 × ch1 (element-wise product — the strongest classification signal,
+                        active only where real gaze coincides with the predicted discriminative zone).
+                        Output: <code>[B, 2]</code> logits (TD / ASD).
+                    </p>
+                    <h6>Architecture Highlights</h6>
+                    <ul>
+                        <li>4 residual blocks with Channel Attention (avg + max pooling, more expressive than plain SE)</li>
+                        <li>Global Average Pooling to <code>[B, 256, 4, 4]</code></li>
+                        <li>FC head with Dropout(0.4) → 2 output logits</li>
+                        <li>CrossEntropyLoss with label_smoothing = 0.1</li>
+                    </ul>
+                    <h6>Channel Attention Formula</h6>
+                    <p class="mono" style="background:var(--paper-dim); padding:0.8rem 1rem; border-radius:8px; font-size:0.9rem;">
+                        A = σ( MLP(AvgPool(F)) + MLP(MaxPool(F)) ) &nbsp;→&nbsp; F̃ = A ⊗ F
+                    </p>
+                    <pre><code class="language-python">class OverlayClassifier(nn.Module):
+    def __init__(self, num_classes=2):
+        super().__init__()
+        self.layer1 = ResidualBlock(3, 64, stride=2)
+        self.layer2 = ResidualBlock(64, 128, stride=2)
+        self.layer3 = ResidualBlock(128, 256, stride=2)
+        self.layer4 = ResidualBlock(256, 256, stride=2)
+        self.gap = nn.AdaptiveAvgPool2d((4, 4))
+        self.fc = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(256 * 4 * 4, 512), nn.ReLU(), nn.Dropout(0.4),
+            nn.Linear(512, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.layer4(self.layer3(self.layer2(self.layer1(x))))
+        return self.fc(self.gap(x))
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 7: Evaluation -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#sec7">
+                    7. Evaluation Metrics &amp; Final Benchmarks
+                </button>
+            </h2>
+            <div id="sec7" class="accordion-collapse collapse">
+                <div class="accordion-body">
+                    <h6>Metric Formulas</h6>
+                    <ul>
+                        <li><code>Accuracy = (TP+TN) / (TP+TN+FP+FN)</code></li>
+                        <li><code>Precision = TP / (TP+FP)</code></li>
+                        <li><code>Recall = TP / (TP+FN)</code></li>
+                        <li><code>F1 = 2·(Precision·Recall) / (Precision+Recall)</code></li>
+                    </ul>
+                    <p>
+                        Full confusion matrix and per-pipeline benchmark tables are on the
+                        <a href="{% url 'results' %}">Results &amp; Visual Showcase</a> page.
+                    </p>
+                    <h6>Headline Result</h6>
+                    <p>
+                        <strong>Pipeline 3 (CLAHE + Bilateral)</strong> achieves <strong>83.08%</strong>
+                        accuracy, <strong>0.8136</strong> F1-score, and <strong>0.9057</strong> precision —
+                        the best balance of sensitivity and false-positive control for a screening context.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

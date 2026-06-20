@@ -1,0 +1,172 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Results &amp; Visual Showcase | ASD Gaze Screening AI{% endblock %}
+
+{% block content %}
+
+<section class="hero-clinical text-center" style="padding: 3rem 1rem 2.5rem;">
+    <div class="container">
+        <span class="hero-eyebrow"><span class="gaze-dot"></span>Benchmarks &amp; Visual Evidence</span>
+        <h1 style="font-size: 2.1rem;">Results &amp; Visual Showcase</h1>
+        <p class="lead" style="font-size:1.05rem;">
+            Three preprocessing pipelines, one confusion matrix, and the statistical fingerprint
+            that separates ASD from TD gaze.
+        </p>
+    </div>
+</section>
+
+<div class="container my-5">
+
+    <!-- ===================== PIPELINE COMPARISON TABLE ===================== -->
+    <span class="section-eyebrow">Final Benchmark</span>
+    <h2 class="section-title mb-4">Pipeline Comparison — Best Stage of Each</h2>
+
+    <div class="table-responsive mb-5">
+        <table class="table table-clinical align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Pipeline</th>
+                    <th>Steps Included</th>
+                    <th>Accuracy</th>
+                    <th>F1-Score</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>Test Loss</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in pipelines %}
+                <tr class="{% if p.verdict == 'best' %}row-best{% elif p.verdict == 'worst' %}row-worst{% endif %}">
+                    <td>
+                        <strong>{{ p.name }}</strong>
+                        {% if p.verdict == 'best' %}<br><span class="badge-best">Recommended</span>{% endif %}
+                    </td>
+                    <td style="font-size:0.85rem; color:var(--ink-soft);">{{ p.steps }}</td>
+                    <td><strong>{{ p.accuracy }}%</strong></td>
+                    <td>{{ p.f1 }}</td>
+                    <td>{{ p.precision }}</td>
+                    <td>{{ p.recall }}</td>
+                    <td>{{ p.loss }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr class="scan-divider">
+
+    <!-- ===================== CONFUSION MATRIX ===================== -->
+    <div class="row align-items-center g-5 mb-5">
+        <div class="col-lg-6">
+            <span class="section-eyebrow">Best Stage — Pipeline 3</span>
+            <h2 class="section-title">Confusion Matrix</h2>
+            <p class="section-sub mb-4">
+                CLAHE + Bilateral on the ASD Saliency test split (130 samples).
+            </p>
+
+            <div class="confusion-grid">
+                <div class="cm-cell cm-head"></div>
+                <div class="cm-cell cm-head">Pred: TD</div>
+                <div class="cm-cell cm-head">Pred: ASD</div>
+
+                <div class="cm-cell cm-label">True: TD</div>
+                <div class="cm-cell cm-tn">{{ confusion_matrix.tn }}<br><small style="font-weight:400;">TN</small></div>
+                <div class="cm-cell cm-fp">{{ confusion_matrix.fp }}<br><small style="font-weight:400;">FP</small></div>
+
+                <div class="cm-cell cm-label">True: ASD</div>
+                <div class="cm-cell cm-fn">{{ confusion_matrix.fn }}<br><small style="font-weight:400;">FN</small></div>
+                <div class="cm-cell cm-tp">{{ confusion_matrix.tp }}<br><small style="font-weight:400;">TP</small></div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card-clinical">
+                <h4 class="mb-3">Derived Metrics</h4>
+                <table class="table mb-0">
+                    <tbody>
+                        <tr><td>Accuracy</td><td class="text-end"><strong>{{ confusion_matrix.accuracy }}%</strong></td></tr>
+                        <tr><td>Precision</td><td class="text-end"><strong>{{ confusion_matrix.precision }}</strong></td></tr>
+                        <tr><td>Recall (Sensitivity)</td><td class="text-end"><strong>{{ confusion_matrix.recall }}</strong></td></tr>
+                        <tr><td>F1-Score</td><td class="text-end"><strong>{{ confusion_matrix.f1 }}</strong></td></tr>
+                    </tbody>
+                </table>
+                <p class="mt-3 mb-0" style="font-size:0.88rem; color:var(--ink-soft);">
+                    High precision (0.9057) means few false ASD alarms — important for a pre-clinical
+                    screening tool that should not unnecessarily worry parents.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <hr class="scan-divider">
+
+    <!-- ===================== EDA TABLE ===================== -->
+    <span class="section-eyebrow">Exploratory Data Analysis</span>
+    <h2 class="section-title mb-4">ASD vs TD — Statistical Fingerprint</h2>
+
+    <div class="table-responsive mb-5">
+        <table class="table table-clinical align-middle mb-0">
+            <thead>
+                <tr><th>Feature</th><th>ASD Mean</th><th>TD Mean</th><th>Direction</th></tr>
+            </thead>
+            <tbody>
+                {% for f in eda_features %}
+                <tr>
+                    <td>{{ f.feature }}</td>
+                    <td>{{ f.asd }}</td>
+                    <td>{{ f.td }}</td>
+                    <td>
+                        {% if "ASD" in f.direction %}
+                            <span class="badge" style="background:var(--teal-mid); color:#fff;">{{ f.direction }}</span>
+                        {% else %}
+                            <span class="badge" style="background:var(--amber); color:#1B2A23;">{{ f.direction }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <hr class="scan-divider">
+
+    <!-- ===================== KEY OBSERVATIONS ===================== -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card-clinical h-100">
+                <h4>What Worked</h4>
+                <ul style="color:var(--ink-soft);">
+                    <li>CLAHE consistently improved performance in every pipeline</li>
+                    <li>Bilateral filter paired well with CLAHE — preserved edges, reduced noise</li>
+                    <li>Skipping the final binarisation step (Pipeline 3) outperformed binarising</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-clinical h-100">
+                <h4>What Hurt Performance</h4>
+                <ul style="color:var(--ink-soft);">
+                    <li>Watershed segmentation fragmented fixation blobs — accuracy fell to 65.38% at that stage</li>
+                    <li>Stacking too many sequential operations (Pipeline 1) caused information loss</li>
+                    <li>Excess morphology/adaptive thresholding lowered precision and recall together</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== WEBCAM TEST CTA ===================== -->
+    <div class="card-clinical text-center mt-5" style="background: var(--teal-deep); border:none;">
+        <h4 style="color:#fff;">Want to see the data-collection tool in action?</h4>
+        <p style="color:#D7E4E2;">
+            The trained classifier isn't deployed for live inference yet — but you can try the
+            same webcam-based eye-tracking tool we used to build our custom dataset.
+        </p>
+        <a href="{{ webcam_url }}" target="_blank" rel="noopener" class="btn btn-clinical-webcam mx-auto" style="width:fit-content;">
+            🎥 Open GazeRecorder Webcam Test
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

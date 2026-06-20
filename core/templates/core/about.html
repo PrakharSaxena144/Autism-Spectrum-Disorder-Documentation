@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}About | ASD Gaze Screening AI{% endblock %}
+
+{% block content %}
+
+<section class="hero-clinical text-center" style="padding: 3rem 1rem 2.5rem;">
+    <div class="container">
+        <span class="hero-eyebrow"><span class="gaze-dot"></span>About the Project</span>
+        <h1 style="font-size: 2.1rem;">Why We Built This</h1>
+    </div>
+</section>
+
+<div class="container my-5" style="max-width: 760px;">
+
+    <p style="font-size:1.05rem; color:var(--ink-soft);">
+        Autism Spectrum Disorder affects an estimated 1 in 65 children in India, yet diagnosis
+        typically arrives at age 3–5 — well past the point where early intervention does the most
+        good. Conventional diagnosis is slow, specialist-dependent, and inaccessible to many families.
+    </p>
+
+    <p style="color:var(--ink-soft);">
+        This project explores whether a webcam-grade eye-tracking heatmap, combined with a
+        two-stage deep learning pipeline, can offer an objective, accessible, pre-clinical
+        screening signal — not a replacement for clinical diagnosis, but a low-cost first flag
+        that could shorten the path to a specialist.
+    </p>
+
+    <hr class="scan-divider">
+
+    <h3>The Team</h3>
+    <div class="row g-4 mt-2">
+        <div class="col-md-6">
+            <div class="card-clinical">
+                <h5 class="mb-1">Prakhar Saxena</h5>
+                <p style="color:var(--ink-soft); margin-bottom:0;">23AIBEA187 · B.Tech (AI)</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card-clinical">
+                <h5 class="mb-1">Aryan Parashar</h5>
+                <p style="color:var(--ink-soft); margin-bottom:0;">23AIBEA214 · B.Tech (AI)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-clinical mt-4">
+        <div class="card-clinical-header">Supervision</div>
+        <h5 class="mb-1">Junaid Ali Reshi</h5>
+        <p style="color:var(--ink-soft); margin-bottom:0;">
+            Assistant Professor, Interdisciplinary Centre for Artificial Intelligence<br>
+            Zakir Husain College of Engineering and Technology, Aligarh Muslim University
+        </p>
+    </div>
+
+    <hr class="scan-divider">
+
+    <h3>Minor Project II — AIP3952</h3>
+    <p style="color:var(--ink-soft);">
+        Submitted as part of the B.Tech curriculum, Interdisciplinary Centre for Artificial
+        Intelligence, ZHCET, AMU. Full technical report and references are available on the
+        <a href="{% url 'documentation' %}">Documentation</a> page.
+    </p>
+
+</div>
+
+{% endblock %}

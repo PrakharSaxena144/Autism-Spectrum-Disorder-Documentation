@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: asd-screening-ai
+    env: python
+    buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn asd_screening_ai.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: asd_screening_ai.settings
+      - key: PYTHON_VERSION
+        value: 3.12.0

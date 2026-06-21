@@ -13,7 +13,7 @@ for a healthcare/clinical-research visual identity.
 | `/` | Hero, epidemiology stats, pipeline snapshot |
 | `/documentation/` | Full technical write-up — dataset, EDA, CLAHE, preprocessing pipelines, Model 1 (GazePredictorUNet), Model 2 (OverlayClassifier), evaluation |
 | `/results/` | Pipeline comparison table, confusion matrix, EDA statistical table, key observations |
-| `/gallery/` | Filterable image gallery — all 36 figures from the report & slide deck, with lightbox viewer |
+| `/gallery/` | Filterable image gallery — all figures from the report & slide deck, with lightbox viewer |
 | `/code-explorer/` | All Google Colab notebooks from the project, grouped by development phase |
 | `/about/` | Team & supervision |
 | `/contact/` | Contact card |

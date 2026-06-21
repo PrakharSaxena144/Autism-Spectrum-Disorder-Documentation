@@ -119,8 +119,8 @@ def gallery(request):
             "label": "Why Heatmaps?",
             "items": [
                 {
-                    "file": base + "slide10_img005.png",
-                    "caption": "Attention span level 4 — fully resolved fixation hotspot",
+                    "file": base + "slide10_img008.png",
+                    "caption": "Attention span level 1 — initial diffuse gaze signal",
                     "tag": "Heatmap Construction",
                 },
                 {
@@ -134,8 +134,8 @@ def gallery(request):
                     "tag": "Heatmap Construction",
                 },
                 {
-                    "file": base + "slide10_img008.png",
-                    "caption": "Attention span level 1 — initial diffuse gaze signal",
+                    "file": base + "slide10_img005.png",
+                    "caption": "Attention span level 4 — fully resolved fixation hotspot",
                     "tag": "Heatmap Construction",
                 },
                 {
@@ -298,17 +298,6 @@ def gallery(request):
                     "file": base + "slide32_img035.png",
                     "caption": "Model 1 prediction example — ASD/TD region overlays with confidence scores on a test image",
                     "tag": "Architecture",
-                },
-            ],
-        },
-        {
-            "key": "final-results",
-            "label": "Final Comparative Results",
-            "items": [
-                {
-                    "file": base + "slide33_img036.png",
-                    "caption": "Final comparison — Pipeline 1 vs 2 vs 3 across all metrics; Pipeline 3 wins on accuracy, F1 and test loss",
-                    "tag": "Final Results",
                 },
             ],
         },

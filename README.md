@@ -108,6 +108,11 @@ asd_screening_ai/
 └── render.yaml
 ```
 
+## Code Base
+I have upload all the experiments and data on the following github repo:-
+
+Link: https://github.com/PrakharSaxena144/Minor_Project_2
+
 ## Credits
 
 - Dataset: ASD Saliency Dataset, Zenodo DOI `10.5281/zenodo.2647418`
